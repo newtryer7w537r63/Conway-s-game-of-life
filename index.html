@@ -1,4 +1,37 @@
-<!DOCTYPE html><html lang="ar"><head><meta charset="UTF-8"><title>🌌疯狂生命游戏🔥</title><style>body{display:flex;flex-direction:column;align-items:center;margin-top:50px;font-family:Comic Sans MS,monospace}#网格🔥💀{display:grid;grid-template-columns:repeat(5,20px);gap:2px}.cell{width:20px;height:20px;background:white;border:1px solid #ccc}.alive{background:black}</style></head><body><h1>🌐Polyglot Game of Life🚀</h1><div id="网格🔥💀"></div><!-- 这是一个疯狂页面 // это сумасшедшая страница --><script>
-// ==== Polyglot Obfuscated JS ==== 
-let 网="١٠٠٠١٠١٠٠٠١١٠١٠٠١٠٠٠١٠٠١",密="١٠١٠",大小=5;function расшифровать(программа,ключ){let результат="";for(let индекс=0;индекс<программа.length;индекс+=ключ.length){let сегмент=программа.slice(индекс,индекс+ключ.length),врем="";for(let i=0;i<ключ.length;i++){let progBit= сегмент[i]==="١"?1:0,keyBit=ключ[i]==="١"?1:0;врем+= (progBit^keyBit).toString()}результат+=врем}return результат}function декодировать(двоичный,размер){let сетка=[];for(let i=0;i<размер;i++){let 行=[];for(let j=0;j<размер;j++)行.push(двоичный[i*размер+j]==="1"?1:0);сетка.push(行)}return сетка}function отображать(сетка){let контейнер=document.getElementById("网格🔥💀");контейнер.innerHTML="";for(let 行 of сетка)for(let 单元 of 行){let div=document.createElement("div");div.className="cell "+(单元?"alive":"");контейнер.appendChild(div)}}function обновить(сетка){let новаяСетка=[];for(let i=0;i<大小;i++){новаяСетка[i]=[];for(let j=0;j<大小;j++){let соседи=0;for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){if(dx===0&&dy===0)continue;let x=i+dx,y=j+dy;x>=0&&x<大小&&y>=0&&y<大小&&(соседи+=сетка[x][y])}новаяСетка[i][j]=сетка[i][j]?(соседи===2||соседи===3?1:0):(соседи===3?1:0)}}return новаяСетка}let decrypted=расшифровать(网,密),网格=декодировать(decrypted,大小);отображать(网格);setInterval(()=>{网格=обновить(网格);отображать(网格)},1e3);
+<!DOCTYPE html><html lang="ar"><head><meta charset="UTF-8"><title>🌌疯狂生命游戏🔥 Zoom</title><style>
+body{display:flex;flex-direction:column;align-items:center;margin:10px;font-family:Comic Sans MS,monospace}
+#controls{margin-bottom:10px}
+canvas{border:1px solid black;cursor:pointer;background:#fff}
+button{margin:2px;padding:5px 10px}
+</style></head><body>
+<h1>🌐Polyglot Conway's Game of Life 200x200🚀</h1>
+<div id="controls">
+<button id="playPause">Pause</button>
+<button id="clear">Clear</button>
+<button id="random">Randomize</button>
+<button id="resetZoom">Reset Zoom</button>
+</div>
+<canvas id="网格🔥💀" width="800" height="800"></canvas>
+<script>
+const 网格宽=200,网格高=200,canvas=document.getElementById("网格🔥💀"),ctx=canvas.getContext("2d");
+let zoom=1,offsetX=0,offsetY=0,isDragging=false,startX,startY;
+let 网格=Array.from({length:网格高},()=>Array(网格宽).fill(0)),运行中=true,interval;
+function расшифровать(программа,ключ){let результат="";for(let индекс=0;индекс<программа.length;индекс+=ключ.length){let сегмент=программа.slice(индекс,индекс+ключ.length),врем="";for(let i=0;i<ключ.length;i++){let progBit=сегмент[i]==="١"?1:0,keyBit=ключ[i]==="١"?1:0;врем+=(progBit^keyBit).toString()}результат+=врем}return результат}
+function декодировать(двоичный,размер){let сетка=[];for(let i=0;i<размер;i++){let 行=[];for(let j=0;j<размер;j++)行.push(двоичный[i*размер+j]==="1"?1:0);сетка.push(行)}return сетка}
+function отобразить(сетка){ctx.clearRect(0,0,canvas.width,canvas.height);const cellSize=(canvas.width/网格宽)*zoom;for(let i=0;i<网格高;i++)for(let j=0;j<网格宽;j++)сетка[i][j]&&ctx.fillRect(j*cellSize+offsetX,i*cellSize+offsetY,cellSize,cellSize)}
+function обновить(сетка){let новаяСетка=Array.from({length:网格高},()=>Array(网格宽).fill(0));for(let i=0;i<网格高;i++)for(let j=0;j<网格宽;j++){let n=0;for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){if(dx===0&&dy===0)continue;let x=i+dx,y=j+dy;x>=0&&x<网格高&&y>=0&&y<网格宽&&(n+=сетка[x][y])}новаяСетка[i][j]=сетка[i][j]?(n===2||n===3?1:0):(n===3?1:0)}return новаяСетка}
+let арабский_рандом="";for(let i=0;i<网格高;i++)for(let j=0;j<网格宽;j++)арабский_рандом+=Math.random()>0.8?"١":"٠";
+let decrypted=расшифровать(арабский_рандом,"١٠١٠"); 
+网格=декодировать(decrypted,网格宽);
+отобразить(网格);
+canvas.addEventListener("click",e=>{const rect=canvas.getBoundingClientRect(),cellSize=(canvas.width/网格宽)*zoom;x=Math.floor((e.clientX-rect.left-offsetX)/cellSize);y=Math.floor((e.clientY-rect.top-offsetY)/cellSize);if(x>=0&&x<网格宽&&y>=0&&y<网格高){网格[y][x]=网格[y][x]?0:1;отобразить(网格);}})
+canvas.addEventListener("mousedown",e=>{isDragging=true;startX=e.clientX-offsetX;startY=e.clientY-offsetY;});
+canvas.addEventListener("mouseup",()=>{isDragging=false;});
+canvas.addEventListener("mousemove",e=>{if(isDragging){offsetX=e.clientX-startX;offsetY=e.clientY-startY;отобразить(网格);}})
+canvas.addEventListener("wheel",e=>{e.preventDefault();const scaleFactor=e.deltaY>0?0.9:1.1;zoom*=scaleFactor;offsetX*=scaleFactor;offsetY*=scaleFactor;отобразить(网格);})
+document.getElementById("playPause").addEventListener("click",()=>{运行中=!运行中;if(运行中){interval=setInterval(()=>{网格=обновить(网格);отобразить(网格)},50);document.getElementById("playPause").innerText="Pause";}else{clearInterval(interval);document.getElementById("playPause").innerText="Play";}})
+document.getElementById("clear").addEventListener("click",()=>{网格=Array.from({length:网格高},()=>Array(网格宽).fill(0));отобразить(网格);})
+document.getElementById("random").addEventListener("click",()=>{网格=Array.from({length:网格高},()=>Array.from({length:网格宽},()=>Math.random()>0.8?1:0));отобразить(网格);})
+document.getElementById("resetZoom").addEventListener("click",()=>{zoom=1;offsetX=0;offsetY=0;отобразить(网格);})
+interval=setInterval(()=>{网格=обновить(网格);отобразить(网格);},50);
 </script></body></html>
